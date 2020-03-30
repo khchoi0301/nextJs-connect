@@ -7,7 +7,7 @@ exports.validateSignup = (req, res, next) => {
     req.sanitizeBody('name')
     req.sanitizeBody('email')
     req.sanitizeBody('password')
-    // Hello world :>)  to  Hello world :&gt;)
+    // sanitizeBody example Hello world :>)  to  Hello world :&gt;)
 
     // Name is non-null and is 4 to 10 characters
     req.checkBody("name", "Enter a name").notEmpty();
@@ -37,7 +37,6 @@ exports.signup = async (req, res) => {
     const user = await new User({ name, email, password });
 
     await User.register(user, password, (err, user) => {
-        console.log(err, user)
         if (err) {
             return res.status(500).send(err.message);
         }
@@ -46,7 +45,6 @@ exports.signup = async (req, res) => {
 };
 
 exports.signin = (req, res, next) => {
-    console.log("+", req.body)
     passport.authenticate('local', (err, user, info) => {
         if (err) {
             return res.status(500).json(err.message)
@@ -65,6 +63,15 @@ exports.signin = (req, res, next) => {
     })(req, res, next)
 };
 
-exports.signout = () => { };
+exports.signout = (req, res) => {
+    res.clearCookie("next-cookie.sid"); //app.js에서 생성한 쿠키 삭제
+    req.logout(); // passport에서 생성됨
+    res.json({ message: "You are now signed out!" });
+};
 
-exports.checkAuth = () => { };
+exports.checkAuth = (req, res, next) => {
+    if (req.isAuthenticated()) { // passport에서 생성됨
+        return next();
+    }
+    res.redirect('/signin')
+};
