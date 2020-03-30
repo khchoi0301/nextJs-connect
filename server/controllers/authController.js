@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const User = mongoose.model("User");
+const passport = require("passport");
 
 exports.validateSignup = (req, res, next) => {
     // express-validator가 middleware로 적용됨
@@ -44,7 +45,25 @@ exports.signup = async (req, res) => {
     })
 };
 
-exports.signin = () => { };
+exports.signin = (req, res, next) => {
+    console.log("+", req.body)
+    passport.authenticate('local', (err, user, info) => {
+        if (err) {
+            return res.status(500).json(err.message)
+        }
+
+        if (!user) {
+            return res.status(400).json(info.message)
+
+        }
+        req.logIn(user, err => {
+            if (err) {
+                return res.status(500).json(err.message)
+            }
+            res.json(user)
+        })
+    })(req, res, next)
+};
 
 exports.signout = () => { };
 
