@@ -7,7 +7,7 @@ const router = express.Router();
 
 /* Error handler for async / await functions */
 const catchErrors = fn => {
-  return function(req, res, next) {
+  return function (req, res, next) {
     return fn(req, res, next).catch(next);
   };
 };
@@ -27,6 +27,8 @@ router.get("/api/auth/signout", authController.signout);
  * USER ROUTES: /api/users
  */
 router.param("userId", userController.getUserById);
+// param으로 userId가 활용되는 경우가 많아(users, profile, feed...) 
+// 해당 함수를 체인화 하지 않고 미들웨어로 적용함
 
 router
   .route("/api/users/:userId")
