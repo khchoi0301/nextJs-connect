@@ -26,10 +26,12 @@ router.get("/api/auth/signout", authController.signout);
 /**
  * USER ROUTES: /api/users
  */
-router.param("userId", userController.getUserById);
 // param으로 userId가 활용되는 경우가 많아(users, profile, feed...) 
-// 해당 함수를 체인화 하지 않고 미들웨어로 적용함
+// 해당 함수를 체인화 하지 않고 미들웨어로 사용하여, req에 flag를 만들어 활용함
+router.param("userId", userController.getUserById);
 
+// 동일 route로 들어온 get, put, delete 요청을 각각의 middleware에서 처리한다.
+// ex) 같은 경로(/api/users/:userId) get 요청은 유저정보 반환, delete는 해당 유저 삭제 등
 router
   .route("/api/users/:userId")
   .get(userController.getAuthUser)
