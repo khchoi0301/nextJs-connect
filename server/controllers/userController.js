@@ -38,7 +38,15 @@ exports.getUserProfile = (req, res) => {
     res.json(req.profile);
 };
 
-exports.getUserFeed = () => { };
+exports.getUserFeed = async (req, res) => {
+    const { following, _id } = req.profile;
+    following.push(_id) // following + 본인
+    const users = await User
+        .find({ _id: { $nin: following } }) // the field value is Not in the specified array
+        .select('_id name avatar')
+
+    res.json(users);
+};
 
 exports.uploadAvatar = () => { };
 
