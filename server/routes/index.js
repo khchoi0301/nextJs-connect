@@ -30,6 +30,19 @@ router.get("/api/auth/signout", authController.signout);
 // 해당 함수를 체인화 하지 않고 미들웨어로 사용하여, req에 flag를 만들어 활용함
 router.param("userId", userController.getUserById);
 
+router.put(
+  "/api/users/follow",
+  authController.checkAuth,
+  catchErrors(userController.addFollowing),
+  catchErrors(userController.addFollower)
+);
+router.put(
+  "/api/users/unfollow",
+  authController.checkAuth,
+  catchErrors(userController.deleteFollowing),
+  catchErrors(userController.deleteFollower)
+);
+
 // 동일 route로 들어온 get, put, delete 요청을 각각의 middleware에서 처리한다.
 // ex) 같은 경로(/api/users/:userId) get 요청은 유저정보 반환, delete는 해당 유저 삭제 등
 router
@@ -54,18 +67,6 @@ router.get(
   catchErrors(userController.getUserFeed)
 );
 
-router.put(
-  "/api/users/follow",
-  authController.checkAuth,
-  catchErrors(userController.addFollowing),
-  catchErrors(userController.addFollower)
-);
-router.put(
-  "/api/users/unfollow",
-  authController.checkAuth,
-  catchErrors(userController.deleteFollowing),
-  catchErrors(userController.deleteFollower)
-);
 
 /**
  * POST ROUTES: /api/posts

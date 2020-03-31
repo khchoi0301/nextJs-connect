@@ -55,9 +55,25 @@ exports.deleteUser = async (req, res) => {
     res.json(deletedUser);
 };
 
-exports.addFollowing = () => { };
+exports.addFollowing = async (req, res, next) => {
+    const { followId } = req.body;
+    await User.findOneAndUpdate(
+        { _id: req.user._id },
+        { $push: { following: followId } }
+        // The mongoose $push operator appends a specified value to an array.
+    )
+    next();
+};
 
-exports.addFollower = () => { };
+exports.addFollower = async (req, res) => {
+    const { followId } = req.body;
+    const user = await User.findOneAndUpdate(
+        { _id: followId },
+        { $push: { followers: req.user._id } },
+        { new: true } // return only updated item
+    )
+    res.json(user);
+};
 
 exports.deleteFollowing = () => { };
 
